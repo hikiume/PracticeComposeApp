@@ -43,16 +43,22 @@ fun CounterScreen() {
     val viewModel: CounterViewModel = viewModel()
     val counter by viewModel.count.collectAsState()
 
-    CounterContent(counter, onIncrementClick = {
-        // カウンターの値をインクリメント
-        viewModel.increment()
-    })
+    CounterContent(
+        counter,
+        onIncrementClick = {
+            // カウンターの値をインクリメント
+            viewModel.increment()
+        },
+        onDecrementClick = {
+            viewModel.decrement()
+        })
 }
 
 @Composable
 fun CounterContent(
     counter: Int,
-    onIncrementClick: () -> Unit
+    onIncrementClick: () -> Unit,
+    onDecrementClick: () -> Unit
 ) {
 
     Column(
@@ -72,6 +78,10 @@ fun CounterContent(
         Button(onClick = onIncrementClick) {
             Text("Increment")
         }
+
+        Button(onClick = onDecrementClick) {
+            Text("Decrement")
+        }
     }
 }
 
@@ -81,5 +91,9 @@ class CounterViewModel : ViewModel() {
 
     fun increment() {
         _count.update { it -> it + 1 }
+    }
+
+    fun decrement() {
+        _count.update { it -> it - 1 }
     }
 }
