@@ -45,20 +45,19 @@ fun CounterScreen() {
 
     CounterContent(
         counter,
-        onIncrementClick = {
-            // カウンターの値をインクリメント
-            viewModel.increment()
-        },
-        onDecrementClick = {
-            viewModel.decrement()
-        })
+        onAction = { action ->
+            when (action) {
+                CounterAction.Increment -> viewModel.increment()
+                CounterAction.Decrement -> viewModel.decrement()
+            }
+        }
+    )
 }
 
 @Composable
 fun CounterContent(
     counter: Int,
-    onIncrementClick: () -> Unit,
-    onDecrementClick: () -> Unit
+    onAction: (CounterAction) -> Unit
 ) {
 
     Column(
@@ -75,11 +74,15 @@ fun CounterContent(
         )
 
         // ボタンがクリックされた時の処理（ロジック）もComposable関数内にある
-        Button(onClick = onIncrementClick) {
+        Button(onClick = {
+            onAction(CounterAction.Increment)
+        }) {
             Text("Increment")
         }
 
-        Button(onClick = onDecrementClick) {
+        Button(onClick = {
+            onAction(CounterAction.Decrement)
+        }) {
             Text("Decrement")
         }
     }
@@ -96,4 +99,9 @@ class CounterViewModel : ViewModel() {
     fun decrement() {
         _count.update { it -> it - 1 }
     }
+}
+
+sealed class CounterAction() {
+    data object Increment : CounterAction()
+    data object Decrement : CounterAction()
 }
