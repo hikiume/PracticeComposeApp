@@ -1,12 +1,14 @@
 package com.example.practicecomposeapp
 
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -15,10 +17,67 @@ import org.junit.Assert.*
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
+    @Before
+    fun before(){
+        // 画面上のどのコンポーザブルをテストするか定義
+        composeTestRule.setContent {
+            CounterScreen()
+        }
+    }
+
     @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.practicecomposeapp", appContext.packageName)
+    // 初期値が0であることを確認する
+    fun initial_state_shows_zero_count() {
+        composeTestRule
+            .onNodeWithText("Counter Value: 0")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    // Incrementボタンを押すと1加算されることを確認
+    fun increment_button_increases_counter_value(){
+        composeTestRule
+            .onNodeWithText("Increment")
+            .performClick()
+
+        composeTestRule
+            .onNodeWithText("Counter Value: 1")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    // Decrementボタンを押すと1減算されることを確認
+    fun decrement_button_decrements_counter_value(){
+
+        for(i in 1..10){
+            composeTestRule
+                .onNodeWithText("Increment")
+                .performClick()
+        }
+
+        composeTestRule
+            .onNodeWithText("Decrement")
+            .performClick()
+
+        composeTestRule
+            .onNodeWithText("Counter Value: 9")
+    }
+
+    @Test
+    // Clearボタンを押すと0になることを確認
+    fun clear_button_resets_counter_to_zero(){
+        composeTestRule
+            .onNodeWithText("Increment")
+            .performClick()
+
+        composeTestRule
+            .onNodeWithText("Clear")
+            .performClick()
+
+        composeTestRule.onNodeWithText("Counter Value: 0")
     }
 }
