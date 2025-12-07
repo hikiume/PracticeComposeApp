@@ -49,6 +49,7 @@ fun CounterScreen() {
             when (action) {
                 CounterAction.Increment -> viewModel.increment()
                 CounterAction.Decrement -> viewModel.decrement()
+                CounterAction.Clear -> viewModel.clear()
             }
         }
     )
@@ -73,7 +74,6 @@ fun CounterContent(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        // ボタンがクリックされた時の処理（ロジック）もComposable関数内にある
         Button(onClick = {
             onAction(CounterAction.Increment)
         }) {
@@ -84,6 +84,12 @@ fun CounterContent(
             onAction(CounterAction.Decrement)
         }) {
             Text("Decrement")
+        }
+
+        Button(onClick = {
+            onAction(CounterAction.Clear)
+        }) {
+            Text("Clear")
         }
     }
 }
@@ -99,9 +105,14 @@ class CounterViewModel : ViewModel() {
     fun decrement() {
         _count.update { it -> it - 1 }
     }
+
+    fun clear() {
+        _count.update { it -> 0 }
+    }
 }
 
 sealed class CounterAction() {
     data object Increment : CounterAction()
     data object Decrement : CounterAction()
+    data object Clear : CounterAction()
 }
