@@ -1,5 +1,6 @@
 package com.example.practicecomposeapp
 
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,13 +18,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.practicecomposeapp.ui.theme.PracticeComposeAppTheme
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +46,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CounterScreen() {
-    val viewModel: CounterViewModel = viewModel()
+    val viewModel: CounterViewModel = hiltViewModel()
     val counter by viewModel.count.collectAsState()
 
     CounterContent(
@@ -94,7 +100,8 @@ fun CounterContent(
     }
 }
 
-class CounterViewModel : ViewModel() {
+@HiltViewModel
+class CounterViewModel @Inject constructor(): ViewModel() {
     private val _count = MutableStateFlow(0)
     val count = _count.asStateFlow()
 
@@ -116,3 +123,6 @@ sealed class CounterAction() {
     data object Decrement : CounterAction()
     data object Clear : CounterAction()
 }
+
+@HiltAndroidApp
+class MyApplication : Application()
