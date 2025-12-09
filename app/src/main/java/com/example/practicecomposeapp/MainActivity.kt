@@ -41,10 +41,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun CounterScreen() {
     val viewModel: CounterViewModel = viewModel()
-    val counter by viewModel.count.collectAsState()
+    val countState by viewModel.state.collectAsState()
 
     CounterContent(
-        counter,
+        countState.count,
         onAction = { action ->
             when (action) {
                 CounterAction.Increment -> viewModel.increment()
@@ -95,21 +95,25 @@ fun CounterContent(
 }
 
 class CounterViewModel : ViewModel() {
-    private val _count = MutableStateFlow(0)
-    val count = _count.asStateFlow()
+    private val _state = MutableStateFlow(CounterState())
+    val state = _state.asStateFlow()
 
     fun increment() {
-        _count.update { it -> it + 1 }
+        _state.update { it -> it.copy(count = it.count + 1) }
     }
 
     fun decrement() {
-        _count.update { it -> it - 1 }
+        _state.update { it -> it.copy(count = it.count - 1) }
     }
 
     fun clear() {
-        _count.update { it -> 0 }
+        _state.update { it -> it.copy(count = 0) }
     }
 }
+
+data class CounterState(
+    val count: Int = 0
+)
 
 sealed class CounterAction() {
     data object Increment : CounterAction()
