@@ -2,8 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)
-    id("com.google.dagger.hilt.android") // ★追加
 }
 
 android {
@@ -54,12 +52,6 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
-
-
-    ksp("com.google.dagger:hilt-compiler:2.57.2") // ★追加
-    implementation("com.google.dagger:hilt-android:2.57.2")
-    // Compose 用
-    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
