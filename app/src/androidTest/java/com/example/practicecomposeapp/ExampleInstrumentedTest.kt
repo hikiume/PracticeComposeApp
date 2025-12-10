@@ -24,15 +24,13 @@ class ExampleInstrumentedTest {
 
     @Before
     fun before(){
-        // 画面上のどのコンポーザブルをテストするか定義
-        composeTestRule.setContent {
-            CounterScreen()
-        }
     }
 
     @Test
     // 初期値が0であることを確認する
     fun initial_state_shows_zero_count() {
+        setComposeTestRuleContext()
+
         composeTestRule
             .onNodeWithText("Counter Value: 0")
             .assertIsDisplayed()
@@ -41,6 +39,8 @@ class ExampleInstrumentedTest {
     @Test
     // Incrementボタンを押すと1加算されることを確認
     fun increment_button_increases_counter_value(){
+        setComposeTestRuleContext()
+
         composeTestRule
             .onNodeWithText("Increment")
             .performClick()
@@ -53,11 +53,7 @@ class ExampleInstrumentedTest {
     @Test
     // カウンターが上限に達したとき、Incrementボタンが無効化されるべき
     fun incrementButton_shouldBeDisabled_whenCounterReachesMaxLimit(){
-        for(i in 1..10){
-            composeTestRule
-                .onNodeWithText("Increment")
-                .performClick()
-        }
+        setComposeTestRuleContext(10)
 
         // 現在のカウンター値が10であることを確認
         composeTestRule
@@ -74,12 +70,7 @@ class ExampleInstrumentedTest {
     @Test
     // Decrementボタンを押すと1減算されることを確認
     fun decrement_button_decrements_counter_value(){
-
-        for(i in 1..10){
-            composeTestRule
-                .onNodeWithText("Increment")
-                .performClick()
-        }
+        setComposeTestRuleContext(10)
 
         composeTestRule
             .onNodeWithText("Decrement")
@@ -92,14 +83,21 @@ class ExampleInstrumentedTest {
     @Test
     // Clearボタンを押すと0になることを確認
     fun clear_button_resets_counter_to_zero(){
-        composeTestRule
-            .onNodeWithText("Increment")
-            .performClick()
+        setComposeTestRuleContext(10)
 
         composeTestRule
             .onNodeWithText("Clear")
             .performClick()
 
         composeTestRule.onNodeWithText("Counter Value: 0")
+    }
+    private fun setComposeTestRuleContext(initialValue:Int = 0){
+        // ViewModelをインスタンス化
+        val initialMaxViewModel = CounterViewModel(initialCount = initialValue)
+
+        // テスト対象のComposableにこのViewModelを注入
+        composeTestRule.setContent {
+            CounterScreen(viewModel = initialMaxViewModel)
+        }
     }
 }

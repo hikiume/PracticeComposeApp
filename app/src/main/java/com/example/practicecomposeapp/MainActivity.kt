@@ -39,8 +39,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CounterScreen() {
-    val viewModel: CounterViewModel = viewModel()
+fun CounterScreen(viewModel: CounterViewModel = viewModel()) {
     val countState by viewModel.state.collectAsState()
 
     CounterContent(
@@ -97,24 +96,27 @@ fun CounterContent(
     }
 }
 
-class CounterViewModel : ViewModel() {
-    private val _state = MutableStateFlow(CounterState())
-    val state = _state.asStateFlow()
-
+class CounterViewModel(initialCount: Int = 0) : ViewModel() {
     val MAX_LIMIT = 10;
 
-    private fun calculateCountState(count: Int): CounterState{
-        val newCount = when{
+    private val _state = MutableStateFlow(
+        applyRulesToCount(initialCount)
+    )
+    val state = _state.asStateFlow()
+
+    private fun applyRulesToCount(count: Int): CounterState {
+        val newCount = when {
             count < 0 -> 0
             count > MAX_LIMIT -> MAX_LIMIT
             else -> count
         }
 
-       return CounterState(count = newCount, isButtonEnabled = newCount < MAX_LIMIT )
+        return CounterState(count = newCount, isButtonEnabled = newCount < MAX_LIMIT)
     }
+
     fun increment() {
-        _state.update {
-            it -> calculateCountState(it.count + 1)
+        _state.update { it ->
+            applyRulesToCount(it.count + 1)
         }
     }
 
@@ -129,7 +131,7 @@ class CounterViewModel : ViewModel() {
 
 data class CounterState(
     val count: Int = 0,
-    val isButtonEnabled : Boolean = true
+    val isButtonEnabled: Boolean = true
 )
 
 sealed class CounterAction() {
