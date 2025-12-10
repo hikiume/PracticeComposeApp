@@ -45,6 +45,7 @@ fun CounterScreen() {
 
     CounterContent(
         countState.count,
+        isIncrementButtonEnabled = countState.isButtonEnabled,
         onAction = { action ->
             when (action) {
                 CounterAction.Increment -> viewModel.increment()
@@ -58,6 +59,7 @@ fun CounterScreen() {
 @Composable
 fun CounterContent(
     counter: Int,
+    isIncrementButtonEnabled: Boolean,
     onAction: (CounterAction) -> Unit
 ) {
 
@@ -74,9 +76,10 @@ fun CounterContent(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        Button(onClick = {
-            onAction(CounterAction.Increment)
-        }) {
+        Button(
+            onClick = { onAction(CounterAction.Increment) },
+            enabled = isIncrementButtonEnabled
+        ) {
             Text("Increment")
         }
 
@@ -98,8 +101,21 @@ class CounterViewModel : ViewModel() {
     private val _state = MutableStateFlow(CounterState())
     val state = _state.asStateFlow()
 
+    val MAX_LIMIT = 10;
+
+    private fun calculateCountState(count: Int): CounterState{
+        val newCount = when{
+            count < 0 -> 0
+            count > MAX_LIMIT -> MAX_LIMIT
+            else -> count
+        }
+
+       return CounterState(count = newCount, isButtonEnabled = newCount < MAX_LIMIT )
+    }
     fun increment() {
-        _state.update { it -> it.copy(count = it.count + 1) }
+        _state.update {
+            it -> calculateCountState(it.count + 1)
+        }
     }
 
     fun decrement() {
@@ -112,7 +128,8 @@ class CounterViewModel : ViewModel() {
 }
 
 data class CounterState(
-    val count: Int = 0
+    val count: Int = 0,
+    val isButtonEnabled : Boolean = true
 )
 
 sealed class CounterAction() {

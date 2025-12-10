@@ -1,6 +1,7 @@
 package com.example.practicecomposeapp
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -48,6 +49,27 @@ class ExampleInstrumentedTest {
             .onNodeWithText("Counter Value: 1")
             .assertIsDisplayed()
     }
+
+    @Test
+    // カウンターが上限に達したとき、Incrementボタンが無効化されるべき
+    fun incrementButton_shouldBeDisabled_whenCounterReachesMaxLimit(){
+        for(i in 1..10){
+            composeTestRule
+                .onNodeWithText("Increment")
+                .performClick()
+        }
+
+        // 現在のカウンター値が10であることを確認
+        composeTestRule
+            .onNodeWithText("Counter Value: 10")
+            .assertExists()
+
+        // ボタンのenabledプロパティがfalseであることを確認
+        composeTestRule
+            .onNodeWithText("Increment")
+            .assertIsNotEnabled()
+    }
+
 
     @Test
     // Decrementボタンを押すと1減算されることを確認
