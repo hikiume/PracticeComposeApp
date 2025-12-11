@@ -99,24 +99,22 @@ fun CounterContent(
 class CounterViewModel(initialCount: Int = 0) : ViewModel() {
     val MAX_LIMIT = 10;
 
-    private val _state = MutableStateFlow(
-        applyRulesToCount(initialCount)
-    )
+    private val _state = MutableStateFlow(CounterState())
     val state = _state.asStateFlow()
 
-    private fun applyRulesToCount(count: Int): CounterState {
-        val newCount = when {
+    private fun applyRulesToCount(count: Int): Int {
+        return when {
             count < 0 -> 0
             count > MAX_LIMIT -> MAX_LIMIT
             else -> count
         }
-
-        return CounterState(count = newCount, isButtonEnabled = newCount < MAX_LIMIT)
     }
 
     fun increment() {
         _state.update { it ->
-            applyRulesToCount(it.count + 1)
+            val newCount = applyRulesToCount(it.count + 1)
+
+            CounterState(newCount, isButtonEnabled = newCount < MAX_LIMIT)
         }
     }
 
