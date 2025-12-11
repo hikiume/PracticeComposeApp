@@ -23,7 +23,7 @@ class ExampleInstrumentedTest {
     val composeTestRule = createComposeRule()
 
     @Before
-    fun before(){
+    fun before() {
     }
 
     @Test
@@ -38,7 +38,7 @@ class ExampleInstrumentedTest {
 
     @Test
     // Incrementボタンを押すと1加算されることを確認
-    fun increment_button_increases_counter_value(){
+    fun increment_button_increases_counter_value() {
         setComposeTestRuleContext()
 
         composeTestRule
@@ -52,8 +52,12 @@ class ExampleInstrumentedTest {
 
     @Test
     // カウンターが上限に達したとき、Incrementボタンが無効化されるべき
-    fun incrementButton_shouldBeDisabled_whenCounterReachesMaxLimit(){
-        setComposeTestRuleContext(10)
+    fun incrementButton_shouldBeDisabled_whenCounterReachesMaxLimit() {
+        setComposeTestRuleContext(9)
+
+        composeTestRule
+            .onNodeWithText("Increment")
+            .performClick()
 
         // 現在のカウンター値が10であることを確認
         composeTestRule
@@ -69,7 +73,7 @@ class ExampleInstrumentedTest {
 
     @Test
     // Decrementボタンを押すと1減算されることを確認
-    fun decrement_button_decrements_counter_value(){
+    fun decrement_button_decrements_counter_value() {
         setComposeTestRuleContext(10)
 
         composeTestRule
@@ -82,7 +86,7 @@ class ExampleInstrumentedTest {
 
     @Test
     // Clearボタンを押すと0になることを確認
-    fun clear_button_resets_counter_to_zero(){
+    fun clear_button_resets_counter_to_zero() {
         setComposeTestRuleContext(10)
 
         composeTestRule
@@ -91,7 +95,8 @@ class ExampleInstrumentedTest {
 
         composeTestRule.onNodeWithText("Counter Value: 0")
     }
-    private fun setComposeTestRuleContext(initialValue:Int = 0){
+
+    private fun setComposeTestRuleContext(initialValue: Int = 0) {
         // ViewModelをインスタンス化
         val initialMaxViewModel = CounterViewModel(initialCount = initialValue)
 
