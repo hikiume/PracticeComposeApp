@@ -44,7 +44,8 @@ fun CounterScreen(viewModel: CounterViewModel = viewModel()) {
 
     CounterContent(
         countState.count,
-        isIncrementButtonEnabled = countState.isButtonEnabled,
+        isIncrementButtonEnabled = countState.isIncrementButtonEnabled,
+        isDecrementButtonEnabled = countState.isDecrementButtonEnabled,
         onAction = { action ->
             when (action) {
                 CounterAction.Increment -> viewModel.increment()
@@ -59,6 +60,7 @@ fun CounterScreen(viewModel: CounterViewModel = viewModel()) {
 fun CounterContent(
     counter: Int,
     isIncrementButtonEnabled: Boolean,
+    isDecrementButtonEnabled: Boolean,
     onAction: (CounterAction) -> Unit
 ) {
 
@@ -82,9 +84,10 @@ fun CounterContent(
             Text("Increment")
         }
 
-        Button(onClick = {
-            onAction(CounterAction.Decrement)
-        }) {
+        Button(
+            onClick = { onAction(CounterAction.Decrement) },
+            enabled = isDecrementButtonEnabled
+        ) {
             Text("Decrement")
         }
 
@@ -98,28 +101,41 @@ fun CounterContent(
 
 class CounterViewModel(initialCount: Int = 0) : ViewModel() {
     val MAX_LIMIT = 10
+    val MIN_LIMIT = 0
 
-    private val _state = MutableStateFlow(CounterState(count = initialCount))
+    private val _state = MutableStateFlow(createNewState(count = initialCount))
     val state = _state.asStateFlow()
 
     private fun applyRulesToCount(count: Int): Int {
         return when {
-            count < 0 -> 0
+            count < MIN_LIMIT -> MIN_LIMIT
             count > MAX_LIMIT -> MAX_LIMIT
             else -> count
         }
+    }
+
+    private fun createNewState(count: Int): CounterState {
+        return CounterState(
+            count = count,
+            isIncrementButtonEnabled = count < MAX_LIMIT,
+            isDecrementButtonEnabled = count > MIN_LIMIT
+        )
     }
 
     fun increment() {
         _state.update { it ->
             val newCount = applyRulesToCount(it.count + 1)
 
-            CounterState(newCount, isButtonEnabled = newCount < MAX_LIMIT)
+            createNewState(newCount)
         }
     }
 
     fun decrement() {
-        _state.update { it -> it.copy(count = it.count - 1) }
+        _state.update { it ->
+            val newCount = applyRulesToCount(it.count - 1)
+
+            createNewState(newCount)
+        }
     }
 
     fun clear() {
@@ -129,7 +145,8 @@ class CounterViewModel(initialCount: Int = 0) : ViewModel() {
 
 data class CounterState(
     val count: Int = 0,
-    val isButtonEnabled: Boolean = true
+    val isIncrementButtonEnabled: Boolean = true,
+    val isDecrementButtonEnabled: Boolean = true
 )
 
 sealed class CounterAction() {

@@ -1,6 +1,7 @@
 package com.example.practicecomposeapp
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -82,6 +83,38 @@ class ExampleInstrumentedTest {
 
         composeTestRule
             .onNodeWithText("Counter Value: 9")
+    }
+
+    @Test
+    // Decrementボタン_無効になっていること_下限に到達する
+    fun decrementButton_shouldBeDisabled_whenCounterReachesMinLimit() {
+        setComposeTestRuleContext(1)
+
+        composeTestRule
+            .onNodeWithText("Decrement")
+            .performClick()
+
+        composeTestRule
+            .onNodeWithText("Decrement")
+            .assertIsNotEnabled()
+    }
+
+    @Test
+    // Decrementボタン_有効になっていること_下限から加算された時
+    fun decrementButton_shouldBeEnabled_whenCounterIsIncrementedFromMinLimit() {
+        setComposeTestRuleContext(0)
+
+        composeTestRule
+            .onNodeWithText("Decrement")
+            .assertIsNotEnabled()
+
+        composeTestRule
+            .onNodeWithText("Increment")
+            .performClick()
+
+        composeTestRule
+            .onNodeWithText("Decrement")
+            .assertIsEnabled()
     }
 
     @Test
