@@ -69,6 +69,7 @@ fun CounterScreen(viewModel: CounterViewModel = viewModel()) {
                 CounterAction.Increment -> viewModel.increment()
                 CounterAction.Decrement -> viewModel.decrement()
                 CounterAction.Clear -> viewModel.clear()
+                CounterAction.CanselClear -> viewModel.canselClear()
             }
         }
     )
@@ -102,6 +103,12 @@ fun CounterContent(
                 color = Color.Red,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
+
+            Button(
+                onClick = { onAction(CounterAction.CanselClear) }
+            ) {
+                Text("Cancel")
+            }
         }
 
         Button(
@@ -197,6 +204,12 @@ class CounterViewModel(initialCount: Int = 0) : ViewModel() {
         }
     }
 
+    fun canselClear() {
+        clearJob?.cancel()
+        clearJob = null
+        _state.update { it -> it.copy(isClearPending = false, systemMessage = "リセットをキャンセルしました") }
+    }
+
     fun messageShown() {
         _state.update { it.copy(systemMessage = null) }
     }
@@ -214,4 +227,5 @@ sealed class CounterAction() {
     data object Increment : CounterAction()
     data object Decrement : CounterAction()
     data object Clear : CounterAction()
+    data object CanselClear : CounterAction()
 }

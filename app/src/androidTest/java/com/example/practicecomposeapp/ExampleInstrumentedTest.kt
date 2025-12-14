@@ -2,6 +2,7 @@ package com.example.practicecomposeapp
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -149,6 +150,30 @@ class ExampleInstrumentedTest {
             .performClick()
 
         composeTestRule.onNodeWithText("Counter Value: 0")
+    }
+
+    @Test
+    // Cancelボタンを押すとClear状態がキャンセルされる
+    fun cancelClearButton() {
+        setComposeTestRuleContext(10)
+
+        composeTestRule
+            .onNodeWithText("Clear")
+            .performClick()
+
+        composeTestRule
+            .onNodeWithText("Cancel")
+            .assertExists()
+
+        composeTestRule
+            .onNodeWithText("Cancel")
+            .performClick()
+
+        composeTestRule
+            .onNodeWithText("Cancel")
+            .assertIsNotDisplayed()
+
+        composeTestRule.onNodeWithText("Counter Value: 10")
     }
 
     private fun setComposeTestRuleContext(initialValue: Int = 0) {
