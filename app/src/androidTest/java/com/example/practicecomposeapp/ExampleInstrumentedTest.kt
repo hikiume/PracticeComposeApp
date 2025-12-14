@@ -11,6 +11,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.Thread.sleep
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -115,6 +116,27 @@ class ExampleInstrumentedTest {
         composeTestRule
             .onNodeWithText("Decrement")
             .assertIsEnabled()
+    }
+
+    @Test
+    fun clearButton_showsResetMessage_andDisappearsAfterDelay() {
+        setComposeTestRuleContext(10)
+
+        composeTestRule
+            .onNodeWithText("Clear")
+            .performClick()
+
+        // 「リセット待機中...」が表示されていることを確認
+        composeTestRule
+            .onNodeWithText("リセット待機中...")
+            .assertIsDisplayed()
+
+        sleep(3000L)
+
+        // メッセージが消えていることを確認
+        composeTestRule
+            .onNodeWithText("リセット待機中...")
+            .assertDoesNotExist()
     }
 
     @Test
